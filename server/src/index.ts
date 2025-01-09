@@ -1,12 +1,10 @@
 import { Elysia } from "elysia";
-import connectDatabase from "./libs/mongoose/connectDatabase";
 import api from "./api";
 import swagger from "@elysiajs/swagger";
 import staticPlugin from "@elysiajs/static";
 
 const PORT = parseInt(process.env.PORT as string) || 3000;
 
-connectDatabase();
 const app = new Elysia()
   .use(staticPlugin({
     assets: "../client/dist",
