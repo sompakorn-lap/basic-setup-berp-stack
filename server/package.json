@@ -11,7 +11,8 @@
     "@elysiajs/static": "^1.2.0",
     "@elysiajs/swagger": "^1.1.6",
     "drizzle-orm": "^0.38.3",
-    "elysia": "latest"
+    "elysia": "latest",
+    "pg": "^8.13.1"
   },
   "devDependencies": {
     "bun-types": "latest",
