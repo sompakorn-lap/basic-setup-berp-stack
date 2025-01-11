@@ -1,19 +1,48 @@
-import Elysia from "elysia";
+import Elysia, { t } from "elysia";
 import db from "./libs/drizzle/db";
-import { usersTable } from "./features/user/schema";
+import { users, UserSchema } from "./features/user/schema";
+import { eq } from "drizzle-orm";
 
 const api = new Elysia({ prefix: "/api" })
-  .get("/", async () => {
+  .get("/", async () => await db.select().from(users))
 
-    const user: typeof usersTable.$inferInsert = {
-      name: "TEST",
-      age: 20,
-      email: "te@gmail.com"
-    };
+  .get("/:userId", async ({ params: { userId } }) => {
+    const user = await db
+      .select()
+      .from(users)
+      .where(eq(users.userId, userId))
+    ;
+    return user[0];
+  })
 
-    await db.insert(usersTable).values(user);
+  .post("/", async ({ body }) => {
+    const user = await db
+      .insert(users)
+      .values(body)
+      .returning()
+    ;
+    return user[0].userId;
+  }, {
+    body: t.Omit(UserSchema, ["userId"])
+  })
 
-    return "test";
+  .delete("/:userId", async ({ params: { userId } }) => {
+    await db
+      .delete(users)
+      .where(eq(users.userId, userId))
+    ;
+    return "delete user successfully.";
+  })
+
+  .put("/:userId", async ({ body, params: { userId } }) => {
+    await db
+      .update(users)
+      .set(body)
+      .where(eq(users.userId, userId))
+    ;
+    return "update user successfully.";
+  }, {
+    body: t.Partial(t.Omit(UserSchema, ["userId"]))
   })
 ;
 
